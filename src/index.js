@@ -26,11 +26,38 @@ console.log('PORT:', process.env.PORT || '5001');
 const app = express();
 const server = http.createServer(app);
 
-// Middleware
+// // Middleware
+// app.use(cors({
+//   origin: ['http://localhost:3000', 'http://localhost:3001'],
+//   credentials: true
+// }));
+
+
+// app.use(cors({
+//   origin: [
+//     'http://localhost:3000',
+//     'https://pex-frontend.vercel.app',
+//     'https://pex-frontend-tau.vercel.app',  // ← Добавьте этот URL
+//     'https://pex-frontend-git-main.vercel.app'
+//   ],
+//   credentials: true,
+//   methods: ['GET', POST, 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: function(origin, callback) {
+    // Разрешить запросы от любых vercel.app поддоменов
+    if (!origin || origin.endsWith('.vercel.app') || origin === 'http://localhost:3000') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 
 // Routes
